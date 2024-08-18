@@ -26,9 +26,6 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
         [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-# Ensure Chocolatey is on the PATH
-RUN $env:PATH += ";$env:ALLUSERSPROFILE\chocolatey\bin"
-
 # Install OpenSSL using Chocolatey
 RUN choco install openssl.light -y
 
