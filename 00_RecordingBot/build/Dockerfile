@@ -15,19 +15,10 @@ RUN msbuild /p:Configuration=Release /p:OutputPath=C:\app /p:Platform=x64
 FROM mcr.microsoft.com/windows:1809
 SHELL ["powershell", "-Command"]
 
-# Install .NET Framework 4.8
-RUN Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/2d6bb6b2-226a-4baa-bdec-798822606ff1/8494001c276a4b96804cde7829c04d7f/ndp48-x86-x64-allos-enu.exe" -OutFile "ndp48-x86-x64-allos-enu.exe" ; \
-    Start-Process "ndp48-x86-x64-allos-enu.exe" -ArgumentList "/quiet", "/norestart" -NoNewWindow -Wait ; \
-    Remove-Item -Force "ndp48-x86-x64-allos-enu.exe"
-
-# Install Chocolatey
-RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
-    [System.Net.ServicePointManager]::SecurityProtocol = \
-        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
-    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
 # Install OpenSSL using Chocolatey
-RUN choco install openssl.light -y
+RUN Invoke-WebRequest -Uri "https://slproweb.com/download/Win32OpenSSL_Light-3_3_1.exe" -OutFile "Win32OpenSSL_Light-3_3_1.exe" ; \
+    Start-Process "Win32OpenSSL_Light-3_3_1.exe" -ArgumentList "/silent", "/verysilent", "/sp-", "/suppressmsgboxes" -NoNewWindow -Wait ; \
+    Remove-Item -Force "Win32OpenSSL_Light-3_3_1.exe"
 
 ADD https://aka.ms/vs/16/release/vc_redist.x64.exe /bot/VC_redist.x64.exe
 
