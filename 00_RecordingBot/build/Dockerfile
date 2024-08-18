@@ -12,7 +12,6 @@ RUN nuget restore
 WORKDIR /src/RecordingBot.Console
 RUN msbuild /p:Configuration=Release /p:OutputPath=C:\app /p:Platform=x64
 
-
 FROM mcr.microsoft.com/windows:1809
 SHELL ["powershell", "-Command"]
 
@@ -21,6 +20,18 @@ RUN Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download
     Start-Process "ndp48-x86-x64-allos-enu.exe" -ArgumentList "/quiet", "/norestart" -NoNewWindow -Wait ; \
     Remove-Item -Force "ndp48-x86-x64-allos-enu.exe"
 
+# Install Chocolatey
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    [System.Net.ServicePointManager]::SecurityProtocol = \
+        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+# Ensure Chocolatey is on the PATH
+RUN $env:PATH += ";$env:ALLUSERSPROFILE\chocolatey\bin"
+
+# Install OpenSSL using Chocolatey
+RUN choco install openssl.light -y
+
 ADD https://aka.ms/vs/16/release/vc_redist.x64.exe /bot/VC_redist.x64.exe
 
 COPY /scripts/entrypoint.cmd /bot
@@ -28,13 +39,6 @@ COPY /scripts/halt_termination.ps1 /bot
 COPY --from=build /app /bot
 
 WORKDIR /bot
-
-RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
-    [System.Net.ServicePointManager]::SecurityProtocol = \
-        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
-        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
-RUN choco install openssl.light -y
 
 EXPOSE $InstanceInternalPort
 EXPOSE $CallSignalingPort
