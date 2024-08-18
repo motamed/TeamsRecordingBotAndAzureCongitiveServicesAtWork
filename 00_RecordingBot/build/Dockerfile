@@ -16,6 +16,11 @@ RUN msbuild /p:Configuration=Release /p:OutputPath=C:\app /p:Platform=x64
 FROM mcr.microsoft.com/windows:1809
 SHELL ["powershell", "-Command"]
 
+# Install .NET Framework 4.8
+RUN Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/2d6bb6b2-226a-4baa-bdec-798822606ff1/8494001c276a4b96804cde7829c04d7f/ndp48-x86-x64-allos-enu.exe" -OutFile "ndp48-x86-x64-allos-enu.exe" ; \
+    Start-Process "ndp48-x86-x64-allos-enu.exe" -ArgumentList "/quiet", "/norestart" -NoNewWindow -Wait ; \
+    Remove-Item -Force "ndp48-x86-x64-allos-enu.exe"
+
 ADD https://aka.ms/vs/16/release/vc_redist.x64.exe /bot/VC_redist.x64.exe
 
 COPY /scripts/entrypoint.cmd /bot
