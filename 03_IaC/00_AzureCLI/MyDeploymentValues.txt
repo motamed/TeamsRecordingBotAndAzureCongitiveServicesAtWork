@@ -1,5 +1,5 @@
-botSubDomain=albot.vsalis.eu
-botName=myTeamsRecBot
-projectPrefix=albot
-azureLocation=northeurope
-acrName=albotacr
+botSubDomain=bot.motamed.xyz
+botName=eand-demo
+projectPrefix=bionicacr
+azureLocation=westeurope
+acrName=bionicacr
